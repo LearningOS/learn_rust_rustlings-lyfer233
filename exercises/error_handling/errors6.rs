@@ -8,7 +8,6 @@
 
 // Make these tests pass! Execute `rustlings hint errors6` for hints :)
 
-// I AM NOT DONE
 
 use std::num::ParseIntError;
 
@@ -21,6 +20,12 @@ enum ParsePosNonzeroError {
 
 impl ParsePosNonzeroError {
     // TODO: add another error conversion function here.
+    fn from_creation(other_err: CreationError) -> Self {
+        match other_err {
+            CreationError::Negative => ParsePosNonzeroError::Creation(CreationError::Negative),
+            CreationError::Zero => ParsePosNonzeroError::Creation(CreationError::Zero),
+        }
+    }
 }
 
 fn parse_pos_nonzero(s: &str)
@@ -28,9 +33,11 @@ fn parse_pos_nonzero(s: &str)
 {
     // TODO: change this to return an appropriate error instead of panicking
     // when `parse()` returns an error.
-    let x: i64 = s.parse().unwrap();
-    PositiveNonzeroInteger::new(x)
-        .map_err(ParsePosNonzeroError::from_creation)
+    let x = s.parse();
+    match x {
+        Ok(value) => PositiveNonzeroInteger::new(value).map_err(ParsePosNonzeroError::from_creation),
+        Err(message) => Err(ParsePosNonzeroError::ParseInt(message)),
+    }
 }
 
 // Don't change anything below this line.
